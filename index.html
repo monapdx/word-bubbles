@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prefix Word Bubbles</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --good: #15803d;
+      --bad: #b91c1c;
+      --border: #dbe3ef;
+      --shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%);
+      color: var(--text);
+    }
+
+    body {
+      padding: 16px;
+    }
+
+    .app {
+      width: min(100%, 1100px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .main {
+      padding: 18px;
+    }
+
+    .side {
+      padding: 18px;
+      position: sticky;
+      top: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .stat-label {
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: bold;
+    }
+
+    .arena {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, #fafdff 0%, #f1f7ff 100%);
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .prefix-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 92px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, #eff6ff, #dbeafe);
+      border: 1px solid #bfdbfe;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .prefix {
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      margin-left: 0.12em;
+    }
+
+    .bubble-field {
+      min-height: 150px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 10px;
+      padding: 4px;
+    }
+
+    .bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #1847b8;
+      font-weight: 700;
+      border: 1px solid #bfd6ff;
+      animation: popIn 180ms ease-out;
+      word-break: break-word;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 15px;
+      font-size: 1rem;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #eef2ff;
+      color: #334155;
+      border: 1px solid #dbe3ef;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .feedback {
+      min-height: 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .feedback.good {
+      color: var(--good);
+    }
+
+    .feedback.bad {
+      color: var(--bad);
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 0 0 10px;
+    }
+
+    .settings {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .setting label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #475569;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .list-box {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 220px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .word-chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      border: 1px solid #d7ddff;
+      font-size: 0.92rem;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 10px;
+      }
+
+      .main,
+      .side {
+        padding: 14px;
+      }
+
+      .topbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="card main">
+      <h1>Prefix Word Bubbles</h1>
+      <p class="subtitle">
+        Type as many valid English words as you can that begin with the shown prefix before time runs out.
+      </p>
+
+      <div class="topbar">
+        <div class="stat">
+          <div class="stat-label">Prefix</div>
+          <div class="stat-value" id="prefixStat">---</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Time Left</div>
+          <div class="stat-value" id="timeStat">90</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="scoreStat">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Found</div>
+          <div class="stat-value" id="foundStat">0 / 0</div>
+        </div>
+      </div>
+
+      <div class="arena">
+        <div class="prefix-wrap">
+          <div class="prefix" id="prefixDisplay">---</div>
+        </div>
+
+        <div class="bubble-field" id="bubbleField">
+          <div class="empty">Start a round to begin finding words.</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input
+          id="guessInput"
+          type="text"
+          placeholder="Type a word and press Enter"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          disabled
+        />
+        <button class="primary" id="submitBtn" disabled>Submit</button>
+        <button class="secondary" id="skipBtn" disabled>Skip Round</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="toolbar">
+        <button class="primary" id="startBtn">Start Game</button>
+        <button class="secondary" id="newRoundBtn">New Round</button>
+        <button class="secondary" id="endBtn">End Round</button>
+      </div>
+    </section>
+
+    <aside class="card side">
+      <div class="section-title">Settings</div>
+      <div class="settings">
+        <div class="setting">
+          <label for="difficultySelect">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="easy">Easy · 2-letter prefixes</option>
+            <option value="medium" selected>Medium · 3-letter prefixes</option>
+            <option value="hard">Hard · 4-letter prefixes</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label for="durationSelect">Round Length</label>
+          <select id="durationSelect">
+            <option value="60">60 seconds</option>
+            <option value="90" selected>90 seconds</option>
+            <option value="120">120 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="small">
+        Scoring: 1 point per valid word, plus a bonus point for words with 8 or more letters.
+        Duplicate guesses do not count.
+      </p>
+
+      <div class="list-box">
+        <div class="section-title">Missed Words</div>
+        <div class="word-list" id="missedWordsList">
+          <div class="empty">End a round to reveal words you missed.</div>
+        </div>
+      </div>
+
+      <div class="list-box">
+        <div class="section-title">Round Summary</div>
+        <div class="small" id="summaryText">
+          Loading prefix rounds...
+        </div>
+      </div>
+
+      <p class="footer-note">
+        This version uses a preprocessed <code>prefixes.json</code> file so rounds load faster and stay within your chosen answer range.
+      </p>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
